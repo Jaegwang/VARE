@@ -1,0 +1,69 @@
+
+*******************
+* How to run maya *
+*******************
+
+cd /netapp/backstage/pub/apps/renderman2/applications/linux/bin;
+./rfm 2017 21.6;
+
+rfm location:
+/netapp/backstage/pub/bin/rfm -> /netapp/backstage/pub/apps/renderman2/applications/linux/bin/rfm
+
+*******************************
+* Where Maya module files are *
+*******************************
+
+/netapp/backstage/pub/apps/maya2/modules
+
+************************************
+* Where RenderMan header files are *
+************************************
+
+/netapp/backstage/pub/apps/renderman2/applications/linux/RenderManProServer-21.6/include
+
+****************************************
+* Where RenderMan plug-in examples are *
+****************************************
+
+/netapp/backstage/pub/apps/renderman2/applications/linux/PixarRenderMan-Examples-21.6_1803412-linuxRHEL6_gcc44icc150.x86_64/plugins
+
+*************************************
+* How to publish RenderMan plug-ins *
+*************************************
+
+[.so file path]
+/netapp/backstage/pub/apps/renderman2/rfm-extensions/21.6/lib/RIS
+
+[.args file path]
+/netapp/backstage/pub/apps/renderman2/rfm-extensions/21.6/lib/RIS/Args
+
+[source codes with its Makefile]
+/netapp/backstage/pub/apps/renderman2/rfm-extensions/21.6/lib/work/RIS
+
+(note)
+1) A .arg file must not have any tab indentations. (space only!)
+2) The 'nodeid' in a .arg file must be unique!
+   You can find the nodeid list in /netapp/backstage/pub/apps/renderman2/rfm-extensions/21.6/NodeIDs.readme.
+
+**********************************
+* Where Houdini header files are *
+**********************************
+
+/netapp/backstage/pub/apps/houdini2/applications/linux/hfs16.5.268/toolkit/include
+
+****************************************
+* Where Houdini external libraries are *
+****************************************
+
+/netapp/backstage/pub/apps/houdini2/applications/linux/hfs16.5.268/dsolib
+
+***********************************************
+* How to check the OpenVDB version of Houdini *
+***********************************************
+
+/netapp/backstage/pub/apps/houdini2/applications/linux/hfs16.0.671/toolkit/include/openvdb/version.h
+: 3.3.0
+
+/netapp/backstage/pub/apps/houdini2/applications/linux/hfs16.5.268/toolkit/include/openvdb/version.h
+: 4.0.1
+

@@ -1,0 +1,15 @@
+##------------##
+## SConstruct ##
+##-------------------------------------------------------##
+## author: Jaegwang Lim @ Dexter Studios                 ##
+## last update: 2018.09.13                               ##
+##-------------------------------------------------------##
+
+import os, sys
+
+RMAN_VER = os.environ.get( 'RMAN_VER', '21.6' )
+os.environ['RMAN_VER'] = RMAN_VER
+
+if not os.path.exists( '../build/rman/'+RMAN_VER ) : os.makedirs( '../build/rman/'+RMAN_VER )
+SConscript( 'SConscript.py', variant_dir='../build/rman/'+RMAN_VER, duplicate=0 )
+

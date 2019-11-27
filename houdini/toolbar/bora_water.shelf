@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="bora_water" label="Bora Water">
+    <memberTool name="diving"/>
+    <memberTool name="swimming0"/>
+  </toolshelf>
+
+  <tool name="diving" label="Diving" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[
+hou.hipFile.merge( "/dexter/Cache_DATA/RND/Bora_presets/whalenew_v01_w01.hip" )
+
+hou.playbar.setFrameRange(1001,1240)
+hou.playbar.setPlaybackRange(1001,1240)
+
+]]></script>
+  </tool>
+</shelfDocument>

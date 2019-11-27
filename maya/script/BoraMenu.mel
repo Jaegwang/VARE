@@ -1,0 +1,44 @@
+//--------------//
+// BoraMenu.mel //
+//-------------------------------------------------------//
+// author: Wanho Choi @ Dexter Studios                   //
+// last update: 2018.03.09                               //
+//-------------------------------------------------------//
+
+global proc BoraMenu( string $parent )
+{
+    setParent -m $parent;
+    if( `menu -q -ni $parent` != 0 ) { return; } // check if menu is built already
+
+	menuItem -to 1 -l "Ocean" -ec 1 -subMenu true BoraOcean_Item;
+    {
+		menuItem -l "Create"               -ec 1 -c "Bora_CreateOcean"          Bora_CreateOcean_Item;
+        menuItem -l "Construct Ocean Mesh" -ec 1 -c "Bora_ConstructOceanMesh"   Bora_ConstructOceanMesh_Item;
+        menuItem -l "Export / Import"      -ec 1 -c "Bora_ExportImportOceanWin" Bora_ExportImportOceanWin_Item;
+    }
+	setParent -menu ..;
+}
+
+global proc CreateBoraMenu()
+{
+    // maya menus
+    global string $gMainWindow;
+    global string $gMainHelpMenu;
+    // Bora menu
+    global string $gBoraMenu;
+
+    if( `menu -exists BoraMainMenu` ) { deleteUI BoraMainMenu; }
+
+    setParent $gMainWindow;
+    $gBoraMenu = `menu -l "Bora" -to true -pmo true BoraMainMenu`;
+    menu -e -pmc ( "BoraMenu " + $gBoraMenu ) $gBoraMenu;
+
+    hotBox -um;
+}
+
+global proc DeleteBoraMenu()
+{
+    // Bora menu does not disapear!
+    //if( `menu -exists BoraMainMenu` ) { deleteUI BoraMainMenu; }
+}
+

@@ -1,0 +1,27 @@
+//--------------------------------//
+// AEBoraBreakingWaveTemplate.mel //
+//-------------------------------------------------------//
+// author: Jaegwang Lim @ Dexter Studios                 //
+// last update: 2018.12.06                               //
+//-------------------------------------------------------//
+
+//////////
+// main //
+global proc AEBoraBreakingWaveTemplate( string $nodeName )
+{
+    editorTemplate -beginScrollLayout;
+    {
+        editorTemplate -beginLayout "General Controls" -collapse 0;
+        {
+			editorTemplate -l "Width" -ac "width";
+        }
+        editorTemplate -endLayout;
+    }
+    editorTemplate -endScrollLayout;
+
+    editorTemplate -addExtraControls;
+
+    editorTemplate -suppress "inProfiles";
+	editorTemplate -suppress "inMesh";
+}
+

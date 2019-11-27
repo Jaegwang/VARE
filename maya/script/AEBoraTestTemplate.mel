@@ -1,0 +1,46 @@
+//-------------------------//
+// AEBoraTestTemplate.mel //
+//-------------------------------------------------------//
+// author: Julie Jang @ Dexter Studios                   //
+// last update: 2018.04.10                               //
+//-------------------------------------------------------//
+
+//////////
+// main //
+global proc AEBoraTestTemplate( string $nodeName )
+{
+    editorTemplate -beginScrollLayout;
+    {
+        editorTemplate -beginLayout "General Controls" -collapse 0;
+        {
+			editorTemplate -as;
+            editorTemplate -l "Test Type"			-ac "testType";
+            editorTemplate -l "Advection Scheme"	-ac "advectionScheme";
+            editorTemplate -l "Input Alembic Path"	-ac "inputAlembicPath";
+            editorTemplate -l "Output Alembic Path"	-ac "outputAlembicPath";
+            editorTemplate -l "resolution"  		-ac "gridRes";
+            editorTemplate -l "Scale"				-ac "scale";
+            editorTemplate -l "xSlice"				-ac "xSlice";
+            editorTemplate -l "ySlice"				-ac "ySlice";
+            editorTemplate -l "zSlice"				-ac "zSlice";
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -addExtraControls;
+    }
+
+    editorTemplate -endScrollLayout;
+
+	editorTemplate -suppress "inTime";
+	editorTemplate -suppress "output";
+
+//    string $parents[] = `listRelatives -p $nodeName`;
+//	string $xform = $parents[0];
+//	setAttr -lock true ($xform+".translate"        );
+//	setAttr -lock true ($xform+".rotate"           );
+//	setAttr -lock true ($xform+".scale"            );
+//	setAttr -lock true ($xform+".shear"            );
+//	setAttr -lock true ($xform+".rotateAxis"       );
+//	setAttr -lock true ($xform+".inheritsTransform");
+}
+

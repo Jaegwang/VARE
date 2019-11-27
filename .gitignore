@@ -1,6 +1,28 @@
+*.o
+*.d
+*.a
+*.so
+*.orig
+*.rej
+*.swp
 
-.vs
 .vscode
-x64
-debug
 
+SCGlobal.pyc
+.sconsign.dblite
+
+/base/object/*
+/houdini/object/*
+/houdini/*.sim
+/build/*
+/houdini/otls/backup/*
+/base/main*.cpp
+/standalone/*
+
+subground
+subgrounds
+
+!publish.bash
+!.emptyForGit
+
+limpub.sh

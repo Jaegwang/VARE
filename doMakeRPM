@@ -1,0 +1,24 @@
+#!/bin/bash
+
+./doClear;
+
+version=$(python GetBoraRpmVersion.py);
+
+cd;
+rm -rf rpmbuild;
+rm -rf Bora-$version;
+cp -r ~/work/Bora ~/Bora-$version;
+cd Bora-$version;
+rm -rf .git* MayaNodeIdList;
+cd ..;
+tar cfz Bora-$version.tar.gz Bora-$version;
+rm -rf Bora-$version;
+rpmdev-setuptree;
+mv Bora-$version.tar.gz rpmbuild/SOURCES;
+cp ~/work/Bora/Bora.spec rpmbuild/SPECS;
+cd rpmbuild;
+rpmbuild --quiet -bb SPECS/Bora.spec;
+mv RPMS/x86_64/*.rpm /netapp/backstage/pub/lib;
+cd ..;
+rm -rf rpmbuild;
+cd ~/work/Bora;

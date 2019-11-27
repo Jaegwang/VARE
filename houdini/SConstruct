@@ -1,0 +1,15 @@
+##------------##
+## SConstruct ##
+##-------------------------------------------------------##
+## author: Jaegwang Lim @ Dexter Studios                 ##
+## last update: 2019.02.21                               ##
+##-------------------------------------------------------##
+
+import os, sys
+
+HOU_VER = os.environ.get( 'HOU_VER', '17.0.352' )
+os.environ['HOU_VER'] = HOU_VER
+
+if not os.path.exists( '../build/houdini/'+HOU_VER) : os.makedirs( '../build/houdini/'+HOU_VER )
+SConscript( 'SConscript.py', variant_dir='../build/houdini/'+HOU_VER, duplicate=0 )
+

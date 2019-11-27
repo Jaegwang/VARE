@@ -1,0 +1,3 @@
+clear;
+./doClear;
+scons -s -j48 -Q all=1;

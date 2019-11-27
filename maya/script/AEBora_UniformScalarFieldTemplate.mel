@@ -1,0 +1,52 @@
+//--------------------------------//
+// AEBora_UniformScalarFieldTemplate.mel //
+//-------------------------------------------------------//
+// author: Wanho Choi @ Dexter Studios                   //
+// last update: 2017.12.08                               //
+//-------------------------------------------------------//
+
+//////////
+// main //
+global proc AEBora_UniformScalarFieldTemplate( string $nodeName )
+{
+    editorTemplate -beginScrollLayout;
+    {
+        editorTemplate -beginLayout "Information" -collapse 0;
+        {
+            editorTemplate -l "Resolution"   -ac "resolution";
+			editorTemplate -as;
+            editorTemplate -l "Scalar Field" -ac "scalarFieldMemorySize";
+            editorTemplate -l "Vector Field" -ac "vectorFieldMemorySize";
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -beginLayout "Display" -collapse 0;
+        {
+            editorTemplate -l "Grid" -ac "displayGrid";
+			editorTemplate -as;
+            editorTemplate -l "-X" -ac "dispGridX0";
+            editorTemplate -l "+X" -ac "dispGridX1";
+            editorTemplate -l "-Y" -ac "dispGridY0";
+            editorTemplate -l "+Y" -ac "dispGridY1";
+            editorTemplate -l "-Z" -ac "dispGridZ0";
+            editorTemplate -l "+Z" -ac "dispGridZ1";
+			editorTemplate -as;
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -beginLayout "Control" -collapse 0;
+        {
+            editorTemplate -l "Subdivision" -ac "subdivision";
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -addExtraControls;
+    }
+
+    editorTemplate -endScrollLayout;
+
+	editorTemplate -suppress "input";
+	editorTemplate -suppress "inXForm";
+	editorTemplate -suppress "output";
+}
+

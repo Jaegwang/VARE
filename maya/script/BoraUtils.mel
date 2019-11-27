@@ -1,0 +1,25 @@
+//---------------//
+// BoraUtils.mel //
+//-------------------------------------------------------//
+// author: Wanho Choi @ Dexter Studios                   //
+// last update: 2018.01.25                               //
+//-------------------------------------------------------//
+
+///////////////////////////////////////////////////////////
+// attribute editor
+
+global proc
+TextBarNew( string $title )
+{
+	string $node[]; tokenize( $title, ".", $node );
+	setUITemplate -pst attributeEditorTemplate;
+		text -l $node[1] -bgc 0.2 0.2 0.2;
+	setUITemplate -ppt;
+}
+
+global proc
+TextBarReplace( string $title )
+{
+    // nothing to do
+}
+

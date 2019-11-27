@@ -1,0 +1,5 @@
+clear;
+export LD_LIBRARY_PATH=../../build/lib:/netapp/backstage/pub/apps/renderman2/applications/linux/RenderManProServer-21.6/lib
+make clean;
+make;
+prman test.rib;

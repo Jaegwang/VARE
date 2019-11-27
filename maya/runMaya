@@ -1,0 +1,54 @@
+##-----------##
+## maya.bash ##
+##-------------------------------------------------------##
+## author: Jaegwang Lim @ Dexter Studios                 ##
+##         Wanho Choi @ Dexter Studios                   ##
+## last update: 2018.04.02                               ##
+##-------------------------------------------------------##
+
+#!/bin/bash
+MAYA_VER='2018'
+RMAN_VER='22.3'
+if [ $1 ]; then
+	MAYA_VER=$1
+fi
+if [ $2 ]; then
+	RMAN_VER=$2
+fi
+
+export MAYA_VER=$MAYA_VER
+export MAYA_OPENCL_IGNORE_DRIVER_VERSION=1
+export EDITOR=gedit
+export RIASCIISTYLE=indented
+export BACKSTAGE_PATH=/netapp/backstage/pub
+export BACKSTAGE_MAYA_PATH=$BACKSTAGE_PATH/apps/maya2
+export BACKSTAGE_RMAN_PATH=$BACKSTAGE_PATH/apps/renderman2
+
+export RMANTREE=$BACKSTAGE_RMAN_PATH/applications/linux/RenderManProServer-$RMAN_VER
+export RMS_SCRIPT_PATHS=$BACKSTAGE_RMAN_PATH/rfm-extensions/$RMAN_VER
+
+export MAYA_MODULE_PATH=$MAYA_MODULE_PATH:$BACKSTAGE_MAYA_PATH/modules
+export MAYA_MODULE_PATH=$MAYA_MODULE_PATH:$BACKSTAGE_RMAN_PATH/modules/$RMAN_VER
+
+export BORA_RMAN_DSO_PATH=$(pwd)/../build/rman
+
+export LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=/usr/autodesk/maya${MAYA_VER}/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${RMANTREE}/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=../build/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$3/dsolib
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:../build/lib
+
+#export HOU_VER=16.0.633
+#export HOU_INSTALL_PATH=/netapp/backstage/pub/apps/houdini2/applications/linux/hfs${HOU_VER}
+#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOU_INSTALL_PATH}/dsolib
+
+export MAYA_PLUG_IN_PATH=../build/maya/${MAYA_VER}/plug-ins:${MAYA_PLUG_IN_PATH}
+export MAYA_SCRIPT_PATH=../build/maya/${MAYA_VER}/scripts:${MAYA_SCRIPT_PATH}
+export XBMLANGPATH=../build/maya/${MAYA_VER}/icons:${XBMLANGPATH}
+
+export PATH=$PATH:$BACKSTAGE_PATH/lib/extern/bin
+
+/usr/autodesk/maya$MAYA_VER/bin/maya$MAYA_VER
+

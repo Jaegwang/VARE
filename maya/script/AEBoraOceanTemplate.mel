@@ -1,0 +1,226 @@
+//-------------------------//
+// AEBoraOceanTemplate.mel //
+//-------------------------------------------------------//
+// author: Wanho Choi @ Dexter Studios                   //
+// last update: 2018.09.05                               //
+//-------------------------------------------------------//
+
+global proc BoraOceanSkyTextureFileNew( string $attr )
+{
+	setUITemplate -pst attributeEditorTemplate;
+	{
+		rowLayout -nc 3;
+		{
+			text -label "Sky Texture File";
+			textField -ed 0 -tx `getAttr $attr` BoraOceanSkyTextureFile;
+			symbolButton -image "navButtonBrowse.xpm" BoraOceanSkyTextureFileBtn;
+		}
+		setParent ..;
+	}
+	setUITemplate -ppt;
+
+	BoraOceanSkyTextureFileReplace $attr;
+}
+
+global proc BoraOceanSkyTextureFileReplace( string $attr )
+{
+	textField -e -tx `getAttr $attr` BoraOceanSkyTextureFile;
+	button -e -c ("BoraOceanSkyTextureSetFile "+$attr) BoraOceanSkyTextureFileBtn;
+}
+
+global proc BoraOceanSkyTextureSetFile( string $attr )
+{
+	string $tokens[];
+	tokenize $attr "." $tokens;
+	string $BoraOceanShape = $tokens[0];
+
+    string $filter = "*.exr *.hdr *.jpg";
+	string $fileNames[] = `fileDialog2 -caption "Spherical Map (.exr .hdr .jpg) File" -ff $filter -fileMode 1`;
+
+	if( size($fileNames) > 0 )
+	{
+		eval( "setAttr -type \"string\" " + $attr + " \"" + $fileNames[0] + "\"" );
+		textField -e -tx $fileNames[0] BoraOceanSkyTextureFile;
+
+		refresh;
+		updateAE $BoraOceanShape;
+	}
+}
+
+global proc BoraOceanShowTanglesChanged( string $node )
+{
+    int $drawOutline = `getAttr ($node+".showTangles")`;
+
+    if( $drawOutline )
+    {
+	    editorTemplate -dc $node "tangleColor" 0;
+    }
+    else
+    {
+	    editorTemplate -dc $node "tangleColor" 1;
+    }
+}
+
+global proc BoraOceanDrawOutlineChanged( string $node )
+{
+    int $drawOutline = `getAttr ($node+".drawOutline")`;
+
+    if( $drawOutline )
+    {
+	    editorTemplate -dc $node "outlineColor" 0;
+	    editorTemplate -dc $node "outlineWidth" 0;
+    }
+    else
+    {
+	    editorTemplate -dc $node "outlineColor" 1;
+	    editorTemplate -dc $node "outlineWidth" 1;
+    }
+}
+
+global proc BoraOceanCrestAccumulationChanged( string $node )
+{
+    int $crestAccumulation = `getAttr ($node+".crestAccumulation")`;
+
+    if( $crestAccumulation )
+    {
+	    editorTemplate -dc $node "crestDecay"      0;
+	    editorTemplate -dc $node "loopingDuration" 1;
+    }
+    else
+    {
+	    editorTemplate -dc $node "crestDecay"      1;
+	    editorTemplate -dc $node "loopingDuration" 0;
+    }
+}
+
+global proc BoraOceanFlowSpeedChanged( string $node )
+{
+    float $flowSpeed = `getAttr ($node+".flowSpeed")`;
+
+    if( abs($flowSpeed) > 0.000001 )
+    {
+	    editorTemplate -dc $node "loopingDuration" 1;
+    }
+    else
+    {
+	    editorTemplate -dc $node "loopingDuration" 0;
+    }
+}
+
+//////////
+// main //
+global proc AEBoraOceanTemplate( string $nodeName )
+{
+    editorTemplate -beginScrollLayout;
+    {
+        editorTemplate -beginLayout "Display Controls" -collapse 1;
+        {
+            editorTemplate -l "Display Mode"              -ac "displayMode";
+			editorTemplate -as;
+            editorTemplate -l "Deep Water Color"          -ac "deepWaterColor";
+            editorTemplate -l "Shallow Water Color"       -ac "shallowWaterColor";
+			editorTemplate -as;
+			editorTemplate -ccu BoraOceanSkyTextureFileNew BoraOceanSkyTextureFileReplace "skyTextureFile";
+            editorTemplate -l "Glossiness"                -ac "glossiness";
+			editorTemplate -as;
+            editorTemplate -l "Exposure"                  -ac "exposure";
+			editorTemplate -as;
+            editorTemplate -l "Draw Outline"              -ac "drawOutline" BoraOceanDrawOutlineChanged;
+            editorTemplate -l "Outline Color"             -ac "outlineColor";
+            editorTemplate -l "Outline Width"             -ac "outlineWidth";
+			editorTemplate -as;
+            editorTemplate -l "Show Tangles"              -ac "showTangles" BoraOceanShowTanglesChanged;
+            editorTemplate -l "Tangle Color"              -ac "tangleColor";
+			editorTemplate -as;
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -beginLayout "Basic Control Mode" -collapse 0;
+        {
+			editorTemplate -ccu TextBarNew TextBarReplace "Time";
+            editorTemplate -l "Time Offset"               -ac "timeOffset";
+            editorTemplate -l "Time Scale"                -ac "timeScale";
+            editorTemplate -l "Looping Duration (frames)" -ac "loopingDuration";
+			editorTemplate -ccu TextBarNew TextBarReplace "Ocean Tile";
+            editorTemplate -l "Map Resolution"            -ac "mapResolution";
+            editorTemplate -l "Grid Level"                -ac "gridLevel";
+            editorTemplate -l "Physical Length (m)"       -ac "physicalLength";
+			editorTemplate -ccu TextBarNew TextBarReplace "Wind";
+            editorTemplate -l "Direction (degrees)"       -ac "windDirection";
+            editorTemplate -l "Speed (m/sec)"             -ac "windSpeed";
+            editorTemplate -l "Wind Fetch Length (km)"    -ac "fetch";
+            editorTemplate -l "Swell"                     -ac "swell";
+			editorTemplate -as;
+            editorTemplate -l "Non-physical Flow Speed"   -ac "flowSpeed" BoraOceanFlowSpeedChanged;
+			editorTemplate -ccu TextBarNew TextBarReplace "Displacement Scale Factor";
+            editorTemplate -l "Amplitude Gain"            -ac "amplitudeGain";
+            editorTemplate -l "Pinch"                     -ac "pinch";
+			editorTemplate -ccu TextBarNew TextBarReplace "Crest (WhitCaps)";
+            editorTemplate -l "Crest Gain"                -ac "crestGain";
+            editorTemplate -l "Crest Bias"                -ac "crestBias";
+            editorTemplate -l "Crest Accumulation"        -ac "crestAccumulation" BoraOceanCrestAccumulationChanged;
+            editorTemplate -l "Crest Decay"               -ac "crestDecay";
+			editorTemplate -as;
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -beginLayout "Advanced Control Mode" -collapse 1;
+        {
+			editorTemplate -ccu TextBarNew TextBarReplace "Time";
+            editorTemplate -l "Time Offset"               -ac "timeOffset";
+            editorTemplate -l "Time Scale"                -ac "timeScale";
+            editorTemplate -l "Looping Duration (frames)" -ac "loopingDuration";
+			editorTemplate -ccu TextBarNew TextBarReplace "Ocean Tile";
+            editorTemplate -l "Map Resolution"            -ac "mapResolution";
+            editorTemplate -l "Grid Level"                -ac "gridLevel";
+            editorTemplate -l "Physical Length (m)"       -ac "physicalLength";
+            editorTemplate -l "Scene Converting Scale"    -ac "sceneConvertingScale";
+			editorTemplate -ccu TextBarNew TextBarReplace "Ocean Spectrum";
+            editorTemplate -l "Type"                      -ac "spectrum";
+            editorTemplate -l "Wind Fetch Length (km)"    -ac "fetch";
+			editorTemplate -ccu TextBarNew TextBarReplace "Directional Spreading";
+            editorTemplate -l "Type"                      -ac "spreading";
+            editorTemplate -l "Direction (degrees)"       -ac "windDirection";
+            editorTemplate -l "Speed (m/sec)"             -ac "windSpeed";
+            editorTemplate -l "Swell"                     -ac "swell";
+			editorTemplate -as;
+            editorTemplate -l "Non-physical Flow Speed"   -ac "flowSpeed" BoraOceanFlowSpeedChanged;
+			editorTemplate -ccu TextBarNew TextBarReplace "Dispersion Relationship";
+            editorTemplate -l "Type"                      -ac "dispersion";
+            editorTemplate -l "Depth (m)"                 -ac "depth";
+            editorTemplate -l "Gravity (m/sec^2)"         -ac "gravity";
+            editorTemplate -l "Surface Tension (mN/m)"    -ac "surfaceTension";
+            editorTemplate -l "Density (kg/m^3)"          -ac "density";
+			editorTemplate -ccu TextBarNew TextBarReplace "Random Number Generation";
+            editorTemplate -l "Type"                      -ac "random";
+            editorTemplate -l "Random Seed"               -ac "randomSeed";
+			editorTemplate -ccu TextBarNew TextBarReplace "Filter";
+            editorTemplate -l "Type"                      -ac "filter";
+            editorTemplate -l "Soft Width (m)"            -ac "filterSoftWidth";
+            editorTemplate -l "Small Wavelength (m)"      -ac "filterSmallWavelength";
+            editorTemplate -l "Big Wavelength (m)"        -ac "filterBigWavelength";
+			editorTemplate -ccu TextBarNew TextBarReplace "Displacement Scale Factor";
+            editorTemplate -l "Amplitude Gain"            -ac "amplitudeGain";
+            editorTemplate -l "Pinch"                     -ac "pinch";
+			editorTemplate -ccu TextBarNew TextBarReplace "Crest (WhitCaps)";
+            editorTemplate -l "Crest Gain"                -ac "crestGain";
+            editorTemplate -l "Crest Bias"                -ac "crestBias";
+            editorTemplate -l "Crest Accumulation"        -ac "crestAccumulation" BoraOceanCrestAccumulationChanged;
+            editorTemplate -l "Crest Decay"               -ac "crestDecay";
+			editorTemplate -ccu TextBarNew TextBarReplace "Multi-threading";
+            editorTemplate -l "Number of Threads"         -ac "numThreads";
+            editorTemplate -l "Grain Size(TBB)"           -ac "grainSize";
+			editorTemplate -as;
+        }
+        editorTemplate -endLayout;
+
+        editorTemplate -addExtraControls;
+    }
+
+    editorTemplate -endScrollLayout;
+
+	editorTemplate -suppress "inTime";
+	editorTemplate -suppress "output";
+	editorTemplate -suppress "onOff";
+}
+

@@ -1,0 +1,15 @@
+##------------##
+## SConstruct ##
+##-------------------------------------------------------##
+## author: Jaegwang Lim @ Dexter Studios                 ##
+## last update: 2019.02.21                               ##
+##-------------------------------------------------------##
+
+import os, sys
+
+MAYA_VER = os.environ.get( 'MAYA_VER', '2018' )
+os.environ['MAYA_VER'] = MAYA_VER
+
+if not os.path.exists( '../build/maya/'+MAYA_VER ) : os.makedirs( '../build/maya/'+MAYA_VER )
+SConscript( 'SConscript.py', variant_dir='../build/maya/'+MAYA_VER, duplicate=0 )
+

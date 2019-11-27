@@ -1,0 +1,29 @@
+ifndef $(PRMAN_VER)
+	PRMAN_VER		:= 22.3
+	PRMAN_BUILD		:= 1923604
+endif
+
+PRMAN_INSTALL_PATH		:= /opt/pixar/RenderManProServer-$(PRMAN_VER)
+PRMAN_EXAMPLE_PATH		:= /opt/pixar/PixarRenderMan-Examples-$(PRMAN_VER)_$(PRMAN_BUILD)-linuxRHEL7_gcc48icc170.x86_64
+EXTERN_LIBRARY_PATH		:= /netapp/backstage/pub/lib/extern
+
+HEADER_PATH				:= .
+SOURCE_PATH				:= .
+OBJECT_PATH				:= .
+SCRIPT_PATH				:= .
+
+CC						:= g++
+NVCC					:= nvcc
+
+CCFLAGS					:= -O3 -m64 -fpic -fopenmp -std=c++11 -D_BOOL -DLINUX -DREQUIRE_IOSTREAM
+LDFLAGS					:= -shared -fopenmp
+SWITCHES				:= -Wno-deprecated -Wno-write-strings -Wno-overflow -Wno-unused-local-typedefs
+WARNINGS				:= -w
+
+CPP_SOURCES				:= $(wildcard $(SOURCE_PATH)/*.cpp)
+CPP_LIST				:= $(notdir $(CPP_SOURCES))							# *.cpp
+OBJ_LIST				:= $(addprefix $(OBJECT_PATH)/,$(CPP_LIST:.cpp=.o))	# object/*.o
+
+CU_SOURCES				:= $(wildcard $(SOURCE_PATH)/*.cu)
+CU_LIST					:= $(notdir $(CU_SOURCES))							# *.cu
+OBJ_LIST				+= $(addprefix $(OBJECT_PATH)/,$(CU_LIST:.cu=.o))	# *.o

@@ -1,0 +1,229 @@
+//---------------//
+// BoraOcean.mel //
+//-------------------------------------------------------//
+// author: Wanho Choi @ Dexter Studios                   //
+// last update: 2018.04.06                               //
+//-------------------------------------------------------//
+
+global proc Bora_CreateOcean()
+{
+    if( !`pluginInfo -q -loaded "libBoraForMaya"` )
+    {
+        error -n "BoraForMaya is not loaded.";
+        return;
+    }
+
+    string $mesh;
+    {
+        string $xforms[] = `ls -sl -type transform`;
+
+        int $count = size($xforms);
+
+        if( $count == 1 )
+        {
+            string $xform = $xforms[0];
+
+            string $shapes[] = `listRelatives -shapes -ni $xform`;
+            if( size($shapes) == 0 ) { error -n "No shape node."; return; }
+            if( size($shapes) != 1 ) { error -n "Too many shape nodes."; return; }
+            string $shape = $shapes[0];
+
+            if( `nodeType $shape` != "mesh" )
+            {
+                error -n ($shape+" is not a polygon mesh.");
+                return;
+            }
+
+            $mesh = $shape;
+        }
+        else if( $count > 1 )
+        {
+            error -n "Too many selected transform nodes.";
+            return;
+        }
+    }
+
+    string $BoraOceanShape = `createNode BoraOcean`;
+
+    string $parents[] = `listRelatives -p $BoraOceanShape`;
+    string $BoraOceanXForm = $parents[0];
+
+    connectAttr time1.outTime ($BoraOceanShape+".inTime");
+    connectAttr ($BoraOceanShape+".output") ($BoraOceanXForm+".dynamics");
+
+    if( $mesh != "" )
+    {
+        connectAttr ($mesh+".w") ($BoraOceanShape+".inMesh");
+    }
+
+    // 'translateY' is not to be locked because it can be adjusted to the MWL (Mean Water Level).
+	setAttr -lock true ($BoraOceanXForm+".translateX"       );
+	setAttr -lock true ($BoraOceanXForm+".translateZ"       );
+	setAttr -lock true ($BoraOceanXForm+".rotate"           );
+	setAttr -lock true ($BoraOceanXForm+".scale"            );
+	setAttr -lock true ($BoraOceanXForm+".shear"            );
+	setAttr -lock true ($BoraOceanXForm+".rotateAxis"       );
+	setAttr -lock true ($BoraOceanXForm+".inheritsTransform");
+}
+
+global proc BoraOcean_SetRange( int $mode )
+{
+	intField -e -en ($mode-1) BoraOceanCmd_Start;
+	intField -e -en ($mode-1) BoraOceanCmd_End;
+}
+
+global proc Bora_ExportImportOceanWin()
+{
+    if( !`pluginInfo -q -loaded "libBoraForMaya"` )
+    {
+        error -n "libBoraForMaya is not loaded.";
+        return;
+    }
+
+    if( `window -q -exists BoraOceanCmdWin` )
+    {
+        deleteUI BoraOceanCmdWin;
+        return;
+    }
+
+    window -wh 10 10 -resizeToFitChildren true -titleBar true -sizeable true -title "Bora Ocean Commands" BoraOceanCmdWin;
+
+    columnLayout -columnOffset "both" 15;
+    {
+        separator -h 10 -w 300 -style "none";
+        text -l "Mode" -font "boldLabelFont" -w 330 -al "left";
+        columnLayout -w 300;
+        {
+            radioButtonGrp -sl 1 -cw2 70 70 -numberOfRadioButtons 2 -labelArray2 "Export" "Import" BoraOceanCmd_Mode;
+        }
+        setParent ..;
+
+        separator -h 10 -w 300 -style "none";
+        text -l "BoraOcean Node" -font "boldLabelFont" -w 330 -al "left";
+        rowLayout -w 330 -nc 2 -columnWidth2 300 30;
+        {
+            textField -tx "" -w 300 BoraOceanCmd_Node;
+            button -l "<<" -c "string $l[]=`ls -sl`; string $c[]=`listRelatives -c -type BoraOcean`; textField -e -tx $c[0] BoraOceanCmd_Node;";
+        }
+		setParent ..;
+
+        separator -h 10 -w 300 -style "none";
+        text -l "File Path" -font "boldLabelFont" -w 330 -al "left";
+        rowLayout -w 330 -nc 2 -columnWidth2 300 30;
+        {
+            textField -tx "" -w 300 BoraOceanCmd_Path;
+            symbolButton -image "navButtonBrowse.xpm" -c "string $l[]=`fileDialog2 -fm 3 -ds 2`; textField -e -tx $l[0] BoraOceanCmd_Path;";
+        }
+		setParent ..;
+
+        separator -h 10 -w 300 -style "none";
+        text -l "File Name" -font "boldLabelFont" -w 330 -al "left";
+        textField -tx "MyOcean" -w 320 BoraOceanCmd_Name;
+
+        separator -h 10 -w 300 -style "none";
+        text -l "Frame Range" -font "boldLabelFont" -w 330 -al "left";
+        columnLayout -w 300;
+        {
+            rowLayout -nc 4 -cw4 150 70 30 50;
+            {
+                radioButtonGrp -sl 1 -cw2 70 70 -numberOfRadioButtons 2 -labelArray2 "time slider" "start/end:" -on1 "BoraOcean_SetRange 1" -on2 "BoraOcean_SetRange 2" BoraOceanCmd_RangeMode;
+                intField -v 0   -w 65 -en 0 BoraOceanCmd_Start;
+                text -l "to" -al "center" -w 20;
+                intField -v 100 -w 65 -en 0 BoraOceanCmd_End;
+            }
+            setParent ..;
+        }
+        setParent ..;
+
+        separator -h 15 -w 330 -style "none";
+        button -l "Execute" -w 330 -al "center" -c "Bora_ExportImportOceanExe";
+        separator -h 15 -w 330 -style "none";
+    }
+    showWindow BoraOceanCmdWin;
+}
+
+global proc Bora_ExportImportOceanExe()
+{
+    if( !`pluginInfo -q -loaded "libBoraForMaya"` )
+    {
+        error -n "BoraForMaya is not loaded.";
+        return;
+    }
+
+    int $mode = `radioButtonGrp -q -sl BoraOceanCmd_Mode`;
+
+    string $nodeName = `textField -q -tx BoraOceanCmd_Node`;
+    string $filePath = `textField -q -tx BoraOceanCmd_Path`;
+    string $fileName = `textField -q -tx BoraOceanCmd_Name`;
+
+    int $startFrame = 0;
+    int $endFrame   = 0;
+
+    int $frameRangeMode = `radioButtonGrp -q -sl BoraOceanCmd_RangeMode`;
+
+    if( $frameRangeMode==1 )
+    {
+        $startFrame = `playbackOptions -q -min`;
+        $endFrame   = `playbackOptions -q -max`;
+    }
+    else
+    {
+        $startFrame = `intField -q -v BoraOceanCmd_Start`;
+        $endFrame   = `intField -q -v BoraOceanCmd_End`;
+    }
+
+    if( $startFrame > $endFrame )
+    {
+        error -n "Invalid frame range.";
+        return;
+    }
+
+    if( $mode == 1 ) // export
+    {
+        BoraOceanCmd -nodeName $nodeName -toolName "export" -filePath $filePath -fileName $fileName -startFrame $startFrame -endFrame $endFrame;
+    }
+    else if( $mode == 2 ) // import
+    {
+        BoraOceanCmd -nodeName $nodeName -toolName "import" -filePath $filePath -fileName $fileName;
+    }
+}
+
+global proc Bora_ConstructOceanMesh()
+{
+    string $xPlanes[] = `ls -sl -type transform`;
+
+    if( size($xPlanes) > 0 )
+    {
+        string $planeMesh;
+        string $boraOcean;
+        
+        for( $i=0; $i<2; ++$i )
+        {
+            string $shapes[] = `listRelatives -shapes -ni $xPlanes[$i]`;
+            
+            if( `attributeExists "output" $shapes[0]`)
+            {
+                $boraOcean = $shapes[0];
+            }
+            else
+            {
+                $planeMesh = $shapes[0];
+            }
+        }
+        
+        if( $planeMesh != "" && $boraOcean != "" )
+        {
+            string $oceanMesh = `createNode BoraOceanMesh`;
+            connectAttr ($planeMesh+".worldMesh") ($oceanMesh+".inMesh");
+            connectAttr ($boraOcean+".output") ($oceanMesh+".inOcean");
+            
+            string $outputMesh = `createNode mesh`;
+            
+            connectAttr ($oceanMesh+".outMesh") ($outputMesh+".inMesh");
+            
+            select $outputMesh;
+            assignShadingGroup initialShadingGroup;       
+        }
+    }
+}
+

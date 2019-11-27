@@ -1,0 +1,28 @@
+//---------------------------------//
+// AEBoraVDBFromPointsTemplate.mel //
+//-------------------------------------------------------//
+// author: Jaegwang Lim @ Dexter Studios                 //
+// last update: 2017.09.26                               //
+//-------------------------------------------------------//
+
+global proc AEBoraVDBFromPointsTemplate( string $nodeName )
+{
+	editorTemplate -beginScrollLayout;
+	{
+		editorTemplate -beginLayout "Options" -collapse 0;
+		{	
+            editorTemplate -l "Radius"         -ac "radius";
+            editorTemplate -l "Voxel Size"     -ac "voxelSize";
+            
+		}
+		editorTemplate -endLayout;
+
+		editorTemplate -addExtraControls;
+	}
+	editorTemplate -endScrollLayout;
+
+	editorTemplate -suppress "inData";
+	editorTemplate -suppress "output";
+
+}
+

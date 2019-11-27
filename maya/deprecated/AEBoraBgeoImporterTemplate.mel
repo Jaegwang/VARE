@@ -1,0 +1,75 @@
+//--------------------------------//
+// AEBoraBgeoImporterTemplate.mel //
+//-------------------------------------------------------//
+// author: Jaegwang Lim @ Dexter Studios                 //
+// last update: 2017.09.20                               //
+//-------------------------------------------------------//
+
+global proc AEBoraBgeoImporterTemplate( string $nodeName )
+{
+	editorTemplate -beginScrollLayout;
+	{
+		editorTemplate -beginLayout "Caches" -collapse 0;
+		{
+			editorTemplate -ccu BoraBgeoImporterLoadFileNew BoraBgeoImporterLoadFileRep "cachePath";
+		}
+		editorTemplate -endLayout;
+
+		editorTemplate -addExtraControls;
+	}
+	editorTemplate -endScrollLayout;
+
+	editorTemplate -suppress "input";
+	editorTemplate -suppress "outData";
+}
+
+global proc BoraBgeoImporterLoadFileNew( string $attr )
+{
+	setUITemplate -pst attributeEditorTemplate;
+
+	rowLayout -nc 3;
+
+	text "Cache Path";
+	textField tf_BoraBgeoImporter_CachePath;
+	symbolButton sb_BoraBgeoImporter_CachePath;
+
+	setParent ..;
+
+	setUITemplate -ppt;
+	
+	BoraBgeoImporterLoadFileRep( $attr );
+}
+
+global proc BoraBgeoImporterLoadFileRep( string $attr )
+{
+	string $buffer[];
+    tokenize $attr "." $buffer;
+    string $nodeName = $buffer[0];
+
+	textField -e -cc ("BoraBgeoImporter_CacheFileChange "+$attr) -tx `getAttr ($attr)`  tf_BoraBgeoImporter_CachePath;
+
+    symbolButton -e -image "navButtonBrowse.xpm" -c ("BoraBgeoImporter_LoadDirectory "+$attr)  sb_BoraBgeoImporter_CachePath;
+}
+
+global proc BoraBgeoImporter_LoadDirectory( string $attr )
+{
+    string $filter = "houdini bgeo (*.bgeo)";
+    string $files[] = `fileDialog2 -fm 1 -ds 1 -fileFilter $filter`;
+
+    if( size($files) > 0 )
+    {
+        setAttr -type "string" $attr $files[0];
+        textField -e -tx $files[0] tf_BoraBgeoImporter_CachePath;
+        
+        currentTime `currentTime -q`;
+    }
+}
+
+global proc BoraBgeoImporter_CacheFileChange( string $attr )
+{
+/*
+    print "view";
+    setAttr -type "string" $attr (`textField -q -tx tf_ZVImporter_CachePath`);
+*/
+}
+
