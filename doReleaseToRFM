@@ -1,4 +1,0 @@
-clear;
-
-cp -f rman/PxrBoraOcean/*.cpp ~/work/rfm-extensions/21.6/lib/work/RIS/PxrBoraOcean;
-cp -f rman/PxrBoraOcean/*.args ~/work/rfm-extensions/21.6/lib/work/RIS/PxrBoraOcean;

@@ -1,7 +1,0 @@
-clear;
-scons -s -c;
-rm -f SCGlobal.pyc;
-find . -name .sconsign.dblite -print0 | xargs -0 rm -rf;
-cd rman; ./doClear;
-cd ..;
-rm -rf build/*;

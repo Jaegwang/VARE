@@ -1,5 +1,0 @@
-#cp -f PxrBoraOcean.so /netapp/backstage/pub/apps/renderman2/rfm-extensions/21.6/lib/RIS;
-#cp -f PxrBoraOcean.args /netapp/backstage/pub/apps/renderman2/rfm-extensions/21.6/lib/RIS/Args
-
-cp -f PxrBoraOcean.so /netapp/backstage/pub/apps/renderman2/rfm-extensions/22.3/lib;
-#cp -f PxrBoraOcean.args /netapp/backstage/pub/apps/renderman2/rfm-extensions/22.3/lib/Args;
